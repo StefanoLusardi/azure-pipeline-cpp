@@ -20,7 +20,7 @@ jobs:
 
   - job: Linux
     pool:
-      vmImage: 'ubuntu-20.04'
+      vmImage: 'ubuntu-22.04'
     steps:
       - script: |
           pip3 install ninja
