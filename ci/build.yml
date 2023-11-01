@@ -48,5 +48,5 @@ jobs:
           cmake --build build --config $(BUILD_TYPE)
         env:
             CC: clang
-            CXX: clang
+            CXX: clang++
         displayName: Build
