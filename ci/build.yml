@@ -149,7 +149,7 @@ jobs:
           pip3 install ninja
         displayName: Install Tools
       - script: |
-          if [ -z "$(MSVC_ENV)" ]; then
+          if [ "$(MSVC_ENV)" != "" ]; then
             call "$(MSVC_ENV)"
           fi
           cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
