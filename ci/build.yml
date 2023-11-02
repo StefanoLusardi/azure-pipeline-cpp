@@ -3,6 +3,7 @@ trigger:
 
 variables:
   BUILD_TYPE: Debug
+  SETUP_ENV: "echo $($CC --version) && echo $($CXX --version)"
 
 jobs:
   - job: Build
@@ -16,7 +17,7 @@ jobs:
           CC: cl
           CXX: cl
           SETUP_ENV: 'call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"'
-        
+
         # Windows 2019 - Clang
         windows2019_clang:
           AGENT: 'windows-2019'
@@ -36,7 +37,7 @@ jobs:
           CC: cl
           CXX: cl
           SETUP_ENV: 'call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"'
-        
+
         # Windows 2022 - Clang
         windows2022_clang:
           AGENT: 'windows-2022'
@@ -151,52 +152,7 @@ jobs:
 
       - script: |
           $(SETUP_ENV)
+          echo
           cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
           cmake --build build --config $(BUILD_TYPE)
         displayName: Build
-
-  - job: Windows
-    pool:
-      vmImage: 'windows-2022'
-    steps:
-      - script: |
-          pip3 install ninja
-        displayName: Install Tools
-      - script: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-          cmake --build build --config $(BUILD_TYPE)
-        env:
-            CC: cl
-            CXX: cl
-        displayName: Build
-
-  # - job: Linux
-  #   pool:
-  #     vmImage: 'ubuntu-22.04'
-  #   steps:
-  #     - script: |
-  #         pip3 install ninja
-  #       displayName: Install Tools
-  #     - script: |
-  #         cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-  #         cmake --build build --config $(BUILD_TYPE)
-  #       env:
-  #           CC: clang-15
-  #           CXX: clang++-15
-  #       displayName: Build
-
-  # - job: MacOS
-  #   pool:
-  #     vmImage: 'macOS-12'
-  #   steps:
-  #     - script: |
-  #         pip3 install ninja
-  #       displayName: Install Tools
-  #     - script: |
-  #         cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-  #         cmake --build build --config $(BUILD_TYPE)
-  #       env:
-  #           CC: clang
-  #           CXX: clang++
-  #       displayName: Build
