@@ -5,6 +5,155 @@ variables:
   BUILD_TYPE: Debug
 
 jobs:
+  - job: Build
+    strategy:
+      matrix:
+
+        # Windows 2019 - MSVC
+        # https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md#visual-studio-enterprise-2019
+        windows2019_msvc:
+          AGENT: 'windows-2019'
+          CC: cl
+          CXX: cl
+          MSVC_ENV: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        
+        # Windows 2019 - Clang
+        windows2019_clang:
+          AGENT: 'windows-2019'
+          CC: clang
+          CXX: clang++
+          MSVC_ENV: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        windows2019_clang_cl:
+          AGENT: 'windows-2019'
+          CC: clang-cl
+          CXX: clang-cl
+          MSVC_ENV: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+        # Windows 2022 - MSVC
+        # https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md#visual-studio-enterprise-2022
+        windows2022_msvc:
+          AGENT: 'windows-2022'
+          CC: cl
+          CXX: cl
+          MSVC_ENV: "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        
+        # Windows 2022 - Clang
+        windows2022_clang:
+          AGENT: 'windows-2022'
+          CC: clang
+          CXX: clang++
+          MSVC_ENV: "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        windows2022_clang_cl:
+          AGENT: 'windows-2022'
+          CC: clang-cl
+          CXX: clang-cl
+          MSVC_ENV: "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+        # Ubuntu 20.04 - Clang
+        ubuntu2004_clang_10:
+          AGENT: 'ubuntu-20.04'
+          CC: clang-10
+          CXX: clang++-10
+        ubuntu2004_clang_11:
+          AGENT: 'ubuntu-20.04'
+          CC: clang-11
+          CXX: clang++-11
+        ubuntu2004_clang_12:
+          AGENT: 'ubuntu-20.04'
+          CC: clang-12
+          CXX: clang++-12
+
+        # Ubuntu 20.04 - GCC
+        ubuntu2004_gcc_9:
+          AGENT: 'ubuntu-20.04'
+          CC: gcc-9
+          CXX: g++-9
+        ubuntu2004_gcc_10:
+          AGENT: 'ubuntu-20.04'
+          CC: gcc-10
+          CXX: g++-10
+
+        # Ubuntu 22.04 - Clang
+        ubuntu2204_clang_13:
+          AGENT: 'ubuntu-22.04'
+          CC: clang-13
+          CXX: clang++-13
+        ubuntu2204_clang_14:
+          AGENT: 'ubuntu-22.04'
+          CC: clang-14
+          CXX: clang++-14
+        ubuntu2204_clang_15:
+          AGENT: 'ubuntu-22.04'
+          CC: clang-15
+          CXX: clang++-15
+
+        # Ubuntu 22.04 - GCC
+        ubuntu2204_gcc_9:
+          AGENT: 'ubuntu-22.04'
+          CC: gcc-9
+          CXX: g++-9
+        ubuntu2204_gcc_10:
+          AGENT: 'ubuntu-22.04'
+          CC: gcc-10
+          CXX: g++-10
+        ubuntu2204_gcc_11:
+          AGENT: 'ubuntu-22.04'
+          CC: gcc-11
+          CXX: g++-11
+        ubuntu2204_gcc_12:
+          AGENT: 'ubuntu-22.04'
+          CC: gcc-12
+          CXX: g++-12
+        ubuntu2204_gcc_13:
+          AGENT: 'ubuntu-22.04'
+          CC: gcc-13
+          CXX: g++-13
+
+        # MacOS 12 - Clang
+        macos12_clang:
+          AGENT: 'macOS-12'
+          CC: clang
+          CXX: clang++
+
+        # MacOS 12 - GCC
+        macos12_gcc_11:
+          AGENT: 'macOS-12'
+          CC: gcc-11
+          CXX: g++-11
+        macos12_gcc_12:
+          AGENT: 'macOS-12'
+          CC: gcc-12
+          CXX: g++-12
+
+        # MacOS 13 - Clang
+        macos13_clang14:
+          AGENT: 'macOS-13'
+          CC: clang
+          CXX: clang++
+
+        # MacOS 13 - GCC
+        macos13_gcc_11:
+          AGENT: 'macOS-13'
+          CC: gcc-11
+          CXX: g++-11
+        macos13_gcc_12:
+          AGENT: 'macOS-13'
+          CC: gcc-12
+          CXX: g++-12
+
+    pool:
+      vmImage: $(AGENT)
+    
+    steps:
+      - script: |
+          pip3 install ninja
+        displayName: Install Tools
+      - script: |
+          if defined "$(MSVC_ENV)" call "$(MSVC_ENV)"
+          cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
+          cmake --build build --config $(BUILD_TYPE)
+        displayName: Build
+
   - job: Windows
     pool:
       vmImage: 'windows-2022'
@@ -21,32 +170,32 @@ jobs:
             CXX: cl
         displayName: Build
 
-  - job: Linux
-    pool:
-      vmImage: 'ubuntu-22.04'
-    steps:
-      - script: |
-          pip3 install ninja
-        displayName: Install Tools
-      - script: |
-          cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-          cmake --build build --config $(BUILD_TYPE)
-        env:
-            CC: clang-15
-            CXX: clang++-15
-        displayName: Build
+  # - job: Linux
+  #   pool:
+  #     vmImage: 'ubuntu-22.04'
+  #   steps:
+  #     - script: |
+  #         pip3 install ninja
+  #       displayName: Install Tools
+  #     - script: |
+  #         cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
+  #         cmake --build build --config $(BUILD_TYPE)
+  #       env:
+  #           CC: clang-15
+  #           CXX: clang++-15
+  #       displayName: Build
 
-  - job: MacOS
-    pool:
-      vmImage: 'macOS-12'
-    steps:
-      - script: |
-          pip3 install ninja
-        displayName: Install Tools
-      - script: |
-          cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-          cmake --build build --config $(BUILD_TYPE)
-        env:
-            CC: clang
-            CXX: clang++
-        displayName: Build
+  # - job: MacOS
+  #   pool:
+  #     vmImage: 'macOS-12'
+  #   steps:
+  #     - script: |
+  #         pip3 install ninja
+  #       displayName: Install Tools
+  #     - script: |
+  #         cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
+  #         cmake --build build --config $(BUILD_TYPE)
+  #       env:
+  #           CC: clang
+  #           CXX: clang++
+  #       displayName: Build
