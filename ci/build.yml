@@ -148,18 +148,23 @@ jobs:
       - script: |
           pip3 install ninja
         displayName: Install Tools
+
+      - task: PythonScript@0
+        continueOnError: True
+        inputs:
+          scriptSource: 'inline'
+          script: |
+            import os
+            import subprocess
+            subprocess.run('call $(MSVC_ENV)', shell=True) if 'MSVC_ENV' in os.environ else None
+            subprocess.run('cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .', shell=True)
+            subprocess.run('cmake --build build --config $(BUILD_TYPE', shell=True)
+
       - script: |
-          python3 -c "import os; import subprocess; subprocess.run('call $(MSVC_ENV)', shell=True) if 'MSVC_ENV' in os.environ else None
+          python3 -c "import os; import subprocess; subprocess.run('call $(MSVC_ENV)', shell=True) if 'MSVC_ENV' in os.environ else None"
           cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
           cmake --build build --config $(BUILD_TYPE)
         displayName: Build
-      # - script: |
-      #     if [ "$(MSVC_ENV)" != "" ]; then
-      #       call "$(MSVC_ENV)"
-      #     fi
-      #     cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) -G Ninja -B build -S .
-      #     cmake --build build --config $(BUILD_TYPE)
-      #   displayName: Build
 
   - job: Windows
     pool:
