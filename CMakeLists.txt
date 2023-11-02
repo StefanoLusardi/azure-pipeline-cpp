@@ -1,3 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(azure-pipeline-cpp)
-add_executable(demo main.cpp)
+add_executable(demo src/main.cpp)
+target_link_libraries(demo PRIVATE spdlog::spdlog)
+target_compile_features(demo PUBLIC cxx_std_20)
+install(TARGETS demo DESTINATION .)

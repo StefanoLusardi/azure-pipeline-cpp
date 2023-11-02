@@ -6,6 +6,53 @@ variables:
   SETUP_ENV: "echo $($CC --version) && echo $($CXX --version)"
 
 jobs:
+  - job: Ubuntu
+    steps:
+    pool:
+      vmImage: ubuntu-22.04
+      - script: |
+          pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
+          python3 scripts/conan/profile.py clang 15
+          python3 scripts/conan/install.py Release clang15
+        displayName: Setup
+      - script: |
+          python3 ./scripts/cmake/configure.py Release clang15
+          python3 ./scripts/cmake/build.py Release
+          python3 ./scripts/cmake/install.py Release
+        displayName: Build
+
+  - job: Windows
+    steps:
+    pool:
+      vmImage: windows-2022
+      - script: |
+          pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          python3 scripts/conan/profile.py msvc 17
+          python3 scripts/conan/install.py Release msvc17
+        displayName: Setup
+      - script: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          python3 ./scripts/cmake/configure.py Release msvc17
+          python3 ./scripts/cmake/build.py Release
+          python3 ./scripts/cmake/install.py Release
+        displayName: Build
+
+  - job: MacOS
+    steps:
+    pool:
+      vmImage: macOS-13
+      - script: |
+          pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
+          python3 scripts/conan/profile.py apple-clang 14
+          python3 scripts/conan/install.py Release apple-clang14
+        displayName: Setup
+      - script: |
+          python3 ./scripts/cmake/configure.py Release apple-clang14
+          python3 ./scripts/cmake/build.py Release
+          python3 ./scripts/cmake/install.py Release
+        displayName: Build
+
   - job: Build
     strategy:
       matrix:

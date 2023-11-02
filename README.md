@@ -28,3 +28,29 @@ Demo project to build a cross-platform CMake-based C++ solution on Azure DevOps 
 | MacOS 13 | clang 14 | [![Build Status](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_apis/build/status%2Fbuild?branchName=main&jobName=Build&configuration=Build%20macos13_clang14)](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_build/latest?definitionId=23&branchName=main) |
 | MacOS 13 | gcc 11 | [![Build Status](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_apis/build/status%2Fbuild?branchName=main&jobName=Build&configuration=Build%20macos13_gcc_11)](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_build/latest?definitionId=23&branchName=main) |
 | MacOS 13 | gcc 12 | [![Build Status](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_apis/build/status%2Fbuild?branchName=main&jobName=Build&configuration=Build%20macos13_gcc_12)](https://stefanolusardi.visualstudio.com/azure-pipeline-cpp/_build/latest?definitionId=23&branchName=main) |
+
+---
+
+## Setup
+```bash
+python -m pip install --upgrade pip
+python -m venv .venv
+
+# Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate.bat
+
+pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
+
+python3 scripts/conan/profile.py <COMPILER_NAME> <COMPILER_VERSION>
+python3 scripts/conan/install.py <Debug|Release> <PROFILE>
+```
+
+## Build
+```bash
+python ./scripts/cmake/configure.py Release <PROFILE>
+python ./scripts/cmake/build.py Release
+python ./scripts/cmake/install.py Release
+```

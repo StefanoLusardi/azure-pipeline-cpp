@@ -1,3 +1,7 @@
 **/build
 **/compile_commands.json
 **/.vscode
+**/.cache
+**/.conan
+**/.venv
+**/__pycache__
