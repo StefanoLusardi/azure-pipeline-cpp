@@ -7,9 +7,9 @@ variables:
 
 jobs:
   - job: Ubuntu
-    steps:
     pool:
       vmImage: ubuntu-22.04
+    steps:
       - script: |
           pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
           python3 scripts/conan/profile.py clang 15
@@ -22,9 +22,9 @@ jobs:
         displayName: Build
 
   - job: Windows
-    steps:
     pool:
       vmImage: windows-2022
+    steps:
       - script: |
           pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
@@ -39,9 +39,9 @@ jobs:
         displayName: Build
 
   - job: MacOS
-    steps:
     pool:
       vmImage: macOS-13
+    steps:
       - script: |
           pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
           python3 scripts/conan/profile.py apple-clang 14
