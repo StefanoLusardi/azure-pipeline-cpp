@@ -28,33 +28,38 @@ def conan_profile_create(profile_name, args):
     run([ 'conan', 'profile', 'update', f'conf.tools.system.package_manager:mode=install', f'{profile_name}'])
     run([ 'conan', 'profile', 'update', f'conf.tools.system.package_manager:sudo=True', f'{profile_name}'])
 
-    if 'clang' in args.compiler:
-        cc_compiler = ''
-        cxx_compiler = ''
-        if platform.system() == 'Linux':
-            cc_compiler = f'clang-{args.compiler_version}'
-            cxx_compiler = f'clang++-{args.compiler_version}'
-        if platform.system() == 'Darwin' or platform.system() == 'Windows':
-            cc_compiler = 'clang'
-            cxx_compiler = 'clang++'
-
-        run([ 'conan', 'profile', 'update', f'settings.compiler.libcxx=libstdc++11', f'{profile_name}'])
-        run([ 'conan', 'profile', 'update', f'env.CC={cc_compiler}', f'{profile_name}'])
-        run([ 'conan', 'profile', 'update', f'env.CXX={cxx_compiler}', f'{profile_name}'])
-
-    if args.compiler == 'gcc':
-        cc_compiler = f'gcc-{args.compiler_version}'
-        cxx_compiler = f'g++-{args.compiler_version}'
-        run([ 'conan', 'profile', 'update', f'settings.compiler.libcxx=libstdc++11', f'{profile_name}'])
-        run([ 'conan', 'profile', 'update', f'env.CC={cc_compiler}', f'{profile_name}'])
-        run([ 'conan', 'profile', 'update', f'env.CXX={cxx_compiler}', f'{profile_name}'])
-
     if args.compiler == 'msvc':
+        if platform.system() != 'Windows':
+            raise RuntimeError("msvc  is only supported on Windows")
+        
         compiler = 'cl'
         run([ 'conan', 'profile', 'update', f'env.CC={compiler}', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', f'env.CXX={compiler}', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', 'settings.compiler.cppstd=20', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', 'settings.compiler.runtime=dynamic', f'{profile_name}'])
+
+    if args.compiler == 'apple-clang':
+        if platform.system() != 'Darwin':
+            raise RuntimeError("apple-clang is only supported on MacOS")
+        
+        cc_compiler = 'clang'
+        cxx_compiler = 'clang++'
+        run([ 'conan', 'profile', 'update', f'env.CC={cc_compiler}', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', f'env.CXX={cxx_compiler}', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', f'settings.compiler.libcxx=libc++', f'{profile_name}'])
+
+    if args.compiler == 'clang':
+        cc_compiler = f'clang-{args.compiler_version}' if platform.system() == 'Linux' else 'clang'
+        cxx_compiler = f'clang++-{args.compiler_version}' if platform.system() == 'Linux' else 'clang++'
+        run([ 'conan', 'profile', 'update', f'settings.compiler.libcxx=libstdc++11', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', f'env.CC={cc_compiler}', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', f'env.CXX={cxx_compiler}', f'{profile_name}'])
+
+    if args.compiler == 'gcc':
+        cc_compiler = f'gcc-{args.compiler_version}' if platform.system() == 'Linux' else 'gcc'
+        cxx_compiler = f'g++-{args.compiler_version}' if platform.system() == 'Linux' else 'g++'
+        run([ 'conan', 'profile', 'update', f'env.CC={cc_compiler}', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', f'env.CXX={cxx_compiler}', f'{profile_name}'])
 
 def conan_profile_show(profile_name):
     run([ 'conan', 'profile', 'show', f'{profile_name}' ])
