@@ -28,12 +28,12 @@ jobs:
       - script: |
           pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          python3 scripts/conan/profile.py msvc 17
-          python3 scripts/conan/install.py Release msvc17
+          python3 scripts/conan/profile.py msvc 193
+          python3 scripts/conan/install.py Release msvc193
         displayName: Setup
       - script: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          python3 ./scripts/cmake/configure.py Release msvc17
+          python3 ./scripts/cmake/configure.py Release msvc193
           python3 ./scripts/cmake/build.py Release
           python3 ./scripts/cmake/install.py Release
         displayName: Build
@@ -54,6 +54,7 @@ jobs:
         displayName: Build
 
   - job: Build
+    condition: False
     strategy:
       matrix:
 
