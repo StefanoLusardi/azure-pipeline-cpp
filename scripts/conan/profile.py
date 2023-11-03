@@ -53,7 +53,8 @@ def conan_profile_create(profile_name, args):
         compiler = 'cl'
         run([ 'conan', 'profile', 'update', f'env.CC={compiler}', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', f'env.CXX={compiler}', f'{profile_name}'])
-    
+        run([ 'conan', 'profile', 'update', 'settings.compiler.cppstd=20', f'{profile_name}'])
+
 def conan_profile_show(profile_name):
     run([ 'conan', 'profile', 'show', f'{profile_name}' ])
 
