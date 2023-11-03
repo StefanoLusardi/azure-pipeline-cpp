@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import argparse
+import pathlib
 import subprocess
 import os
 from command import run
@@ -29,6 +30,10 @@ def parse():
     return parser.parse_args()
 
 def configure(args):
+    current_working_directory = pathlib.Path().resolve()
+    os.environ['CONAN_USER_HOME'] = str(current_working_directory.absolute())
+    print("Current Working Directory:", current_working_directory)
+
     CXX = subprocess.run(f'conan profile get env.CXX {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
     CC = subprocess.run(f'conan profile get env.CC {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
 
@@ -38,7 +43,7 @@ def configure(args):
     run([
         'cmake',
         '-G', 'Ninja',
-        '-D', f'CMAKE_CC_COMPILER={CC}',
+        '-D', f'CMAKE_C_COMPILER={CC}',
         '-D', f'CMAKE_CXX_COMPILER={CXX}',
         '-D', f'CMAKE_BUILD_TYPE={str(args.build_type)}',
         '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_WARNINGS_ERROR={str(args.warnings)}',
