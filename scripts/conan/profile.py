@@ -34,7 +34,7 @@ def conan_profile_create(profile_name, args):
         if platform.system() == 'Linux':
             cc_compiler = f'clang-{args.compiler_version}'
             cxx_compiler = f'clang++-{args.compiler_version}'
-        if platform.system() == 'Darwin':
+        if platform.system() == 'Darwin' or platform.system() == 'Windows':
             cc_compiler = 'clang'
             cxx_compiler = 'clang++'
 
@@ -54,6 +54,7 @@ def conan_profile_create(profile_name, args):
         run([ 'conan', 'profile', 'update', f'env.CC={compiler}', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', f'env.CXX={compiler}', f'{profile_name}'])
         run([ 'conan', 'profile', 'update', 'settings.compiler.cppstd=20', f'{profile_name}'])
+        run([ 'conan', 'profile', 'update', 'settings.compiler.runtime=dynamic', f'{profile_name}'])
 
 def conan_profile_show(profile_name):
     run([ 'conan', 'profile', 'show', f'{profile_name}' ])
