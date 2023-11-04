@@ -3,7 +3,7 @@ import argparse
 import pathlib
 import subprocess
 import os
-from command import run
+from cmake.command import run
 
 def check():
     run([ 'which', 'cmake' ])
@@ -29,7 +29,7 @@ def parse():
     parser.add_argument("--docs",               required=False, default=False, action='store_true')
     return parser.parse_args()
 
-def configure(args):
+def main(args):
     current_working_directory = pathlib.Path().resolve()
     os.environ['CONAN_USER_HOME'] = str(current_working_directory.absolute())
     print("Current Working Directory:", current_working_directory)
@@ -46,15 +46,10 @@ def configure(args):
         '-D', f'CMAKE_C_COMPILER={CC}',
         '-D', f'CMAKE_CXX_COMPILER={CXX}',
         '-D', f'CMAKE_BUILD_TYPE={str(args.build_type)}',
-        '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_WARNINGS_ERROR={str(args.warnings)}',
-        '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_UNIT_TESTS={args.unit_tests}',
-        '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_UNIT_TESTS_COVERAGE={str(args.coverage)}',
-        '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_BENCHMARKS={str(args.benchmarks)}',
-        '-D', f'TEIACORE_INFERENCE_CLIENT_ENABLE_EXAMPLES={str(args.examples)}',
         '-B', f'{args.build_dir}/{args.build_type}',
         '-S', '.'
     ])
 
 if __name__ == '__main__':
     check()
-    configure(parse())
+    main(parse())

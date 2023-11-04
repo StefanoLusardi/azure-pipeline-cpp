@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import argparse
-from command import run
+from cmake.command import run
 
 def check():
     run(['cmake', '--version'])

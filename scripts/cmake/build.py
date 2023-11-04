@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import argparse
-from command import run
+from cmake.command import run
 
 def check():
     run([ 'which', 'cmake' ])
@@ -12,7 +12,7 @@ def parse():
     parser.add_argument("--build_dir", help="Build Directory", required=False, default='./build')
     return parser.parse_args()
 
-def build(args):
+def main(args):
     run([
         'cmake',
         '--build', f'{args.build_dir}/{args.build_type}',
@@ -21,4 +21,4 @@ def build(args):
 
 if __name__ == '__main__':
     check()
-    build(parse())
+    main(parse())
