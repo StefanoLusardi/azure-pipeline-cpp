@@ -3,7 +3,8 @@ import argparse
 import pathlib
 import subprocess
 import os
-# from cmake.command import run
+from command import run
+import configparser
 
 def check():
     run([ 'which', 'cmake' ])
@@ -33,24 +34,25 @@ def main(args):
     current_working_directory = pathlib.Path(".conan").resolve()
     os.environ['CONAN_HOME'] = str(current_working_directory.absolute())
     print("Current Working Directory:", current_working_directory)
+    conan_profile_path = pathlib.Path(current_working_directory.absolute(), "profiles", args.profile).resolve()
 
-    CXX = subprocess.run(f'conan profile get buildenv.CXX {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
-    CC = subprocess.run(f'conan profile get buildenv.CC {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
+    profile = configparser.ConfigParser()
+    profile.read(conan_profile_path)
+    c_compiler = profile['buildenv']['CC']
+    cxx_compiler = profile['buildenv']['CXX']
 
-    print(CC)
-    print(CXX)
-    return
+    subprocess.run(f"conan profile show --profile:build={args.profile} --profile:host={args.profile}", shell=True)
 
     run([
         'cmake',
         '-G', 'Ninja',
-        '-D', f'CMAKE_C_COMPILER={CC}',
-        '-D', f'CMAKE_CXX_COMPILER={CXX}',
+        '-D', f'CMAKE_C_COMPILER={c_compiler}',
+        '-D', f'CMAKE_CXX_COMPILER={cxx_compiler}',
         '-D', f'CMAKE_BUILD_TYPE={str(args.build_type)}',
         '-B', f'{args.build_dir}/{args.build_type}',
         '-S', '.'
     ])
 
 if __name__ == '__main__':
-    # check()
+    check()
     main(parse())

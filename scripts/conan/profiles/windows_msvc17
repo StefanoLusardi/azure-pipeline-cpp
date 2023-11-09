@@ -6,9 +6,8 @@ compiler=msvc
 compiler.version=193
 compiler.cppstd=20
 compiler.runtime=dynamic
-[options]
+[buildenv]
+CC=cl
+CXX=cl
 [conf]
-tools.cmake.cmaketoolchain:generator=Ninja
-tools.system.package_manager:mode=install
-tools.system.package_manager:sudo=True
 tools.build:compiler_executables={"c": "cl", "cpp": "cl"}

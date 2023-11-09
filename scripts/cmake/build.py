@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import argparse
-from cmake.command import run
+from command import run
 
 def check():
     run([ 'which', 'cmake' ])

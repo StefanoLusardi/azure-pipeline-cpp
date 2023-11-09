@@ -20,6 +20,7 @@ install(TARGETS demo PUBLIC_HEADER DESTINATION include/demo)
 add_executable(example examples/demo_example.cpp)
 target_link_libraries(example PUBLIC demo::demo)
 target_compile_features(example PUBLIC cxx_std_20)
+install(TARGETS example DESTINATION examples)
 
 # tests
 # TODO

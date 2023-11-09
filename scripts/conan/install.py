@@ -33,10 +33,10 @@ def check_conan_profile(profile):
             print("Conan Profile found:", profile)
         else:
             print("ERROR! Conan Profile not found:", profile)
+            print("Available profiles:")
             for profile in profiles:
                 print(profile)
             sys.exit(1)
-
     except Exception as e:
         print(f'Unhandled Exception: {e}') 
 
