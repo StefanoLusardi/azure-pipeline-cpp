@@ -4,38 +4,55 @@ import argparse
 import pathlib
 import os
 import sys
+import shutil
 
 def parse() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-b", "--build_type", help="Debug or Release", choices=['Debug', 'Release'], default="Release")
-    parser.add_argument("-p", "--profile", help="Conan Profile", default="default")
+    parser.add_argument("build_type", help="Debug or Release", choices=['Debug', 'Release'])
+    parser.add_argument("profile", help="Conan Profile")
     parser.add_argument("-d", "--directories", help="Specific conanfiles directories", nargs='*', required=False)
     return parser.parse_args()
 
-def conan_install(conanfile_directory, profile, build_type):
-    command = [
-        'conan', 'install', f'{conanfile_directory}',
-        '--install-folder', f'build/modules', 
-        '--settings', f'build_type={build_type}',
-        '--profile:build', f'{profile}',
-        '--profile:host', f'{profile}',
-        '--build', 'missing'
-    ]
+def setup_conan_home():
+    current_working_directory = pathlib.Path(".conan").resolve()
+    os.environ['CONAN_HOME'] = str(current_working_directory.absolute())
+    print("CONAN_HOME Directory:", current_working_directory)
 
+def update_conan_profiles():
+    src = pathlib.Path("scripts", "conan", "profiles").resolve()
+    dst = pathlib.Path(os.getenv('CONAN_HOME'), "profiles").resolve()
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+
+def check_conan_profile(profile):
+    command = "conan profile list"
     try:
-        ret = subprocess.run(command)
+        ret = subprocess.run(command, shell=True, capture_output=True)
+        ret.check_returncode()
+        profiles = ret.stdout.decode().strip().splitlines()
+        if profile in profiles:
+            print("Conan Profile found:", profile)
+        else:
+            print("ERROR! Conan Profile not found:", profile)
+            for profile in profiles:
+                print(profile)
+            sys.exit(1)
+
+    except Exception as e:
+        print(f'Unhandled Exception: {e}') 
+
+def conan_install(conanfile_directory, profile, build_type):
+    command = f"conan install {conanfile_directory} --output-folder=build/modules --settings build_type={build_type} --profile:build={profile} --profile:host={profile} --build missing"
+    try:
+        ret = subprocess.run(command, shell=True, capture_output=True)
         ret.check_returncode()
     except Exception as e:
         print(f'Unhandled Exception: {e}') 
 
-def setup_conan_home():
-    current_working_directory = pathlib.Path().resolve()
-    os.environ['CONAN_USER_HOME'] = str(current_working_directory.absolute())
-    print("Current Working Directory:", current_working_directory)
-
 def main():
-    setup_conan_home()
     args = parse()
+    setup_conan_home()
+    update_conan_profiles()
+    check_conan_profile(args.profile)
 
     conanfile_directories = []
     if not args.directories:
@@ -47,7 +64,7 @@ def main():
         conanfile_directories = args.directories
 
     for conanfile_directory in conanfile_directories:
-        print("Processing directory:", conanfile_directory)
+        print("Installing conanfile:", conanfile_directory)
         conan_install(conanfile_directory, args.profile, args.build_type)
 
 if __name__ == '__main__':

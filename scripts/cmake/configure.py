@@ -3,7 +3,7 @@ import argparse
 import pathlib
 import subprocess
 import os
-from cmake.command import run
+# from cmake.command import run
 
 def check():
     run([ 'which', 'cmake' ])
@@ -30,15 +30,16 @@ def parse():
     return parser.parse_args()
 
 def main(args):
-    current_working_directory = pathlib.Path().resolve()
-    os.environ['CONAN_USER_HOME'] = str(current_working_directory.absolute())
+    current_working_directory = pathlib.Path(".conan").resolve()
+    os.environ['CONAN_HOME'] = str(current_working_directory.absolute())
     print("Current Working Directory:", current_working_directory)
 
-    CXX = subprocess.run(f'conan profile get env.CXX {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
-    CC = subprocess.run(f'conan profile get env.CC {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
+    CXX = subprocess.run(f'conan profile get buildenv.CXX {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
+    CC = subprocess.run(f'conan profile get buildenv.CC {args.profile}', shell=True, capture_output=True).stdout.decode().strip()
 
     print(CC)
     print(CXX)
+    return
 
     run([
         'cmake',
@@ -51,5 +52,5 @@ def main(args):
     ])
 
 if __name__ == '__main__':
-    check()
+    # check()
     main(parse())

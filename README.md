@@ -43,9 +43,9 @@ source .venv/bin/activate
 .venv\Scripts\activate.bat
 
 pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
+python3 scripts/conan/install.py <Debug|Release> <PROFILE>
 
-python3 scripts/conan/profile.py -c <COMPILER_NAME> -v <COMPILER_VERSION>
-python3 scripts/conan/install.py -b <Debug|Release> -p <PROFILE>
+# Note: the available profiles are located into scripts/conan/profiles.
 ```
 
 ## Build
