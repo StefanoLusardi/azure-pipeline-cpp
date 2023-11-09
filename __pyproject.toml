@@ -1,0 +1,4 @@
+[tool.cibuildwheel]
+build = ["cp310*"]
+skip = ["cp36-*", "cp37-*", "*musl*", "pp*"]
+build-verbosity = 1

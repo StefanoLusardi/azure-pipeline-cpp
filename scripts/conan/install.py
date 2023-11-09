@@ -5,10 +5,10 @@ import pathlib
 import os
 import sys
 
-def parse():
+def parse() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("build_type", help="Debug or Release", choices=['Debug', 'Release'])
-    parser.add_argument("profile", help="Conan Profile")
+    parser.add_argument("-b", "--build_type", help="Debug or Release", choices=['Debug', 'Release'], default="Release")
+    parser.add_argument("-p", "--profile", help="Conan Profile", default="default")
     parser.add_argument("-d", "--directories", help="Specific conanfiles directories", nargs='*', required=False)
     return parser.parse_args()
 
@@ -37,10 +37,9 @@ def main():
     setup_conan_home()
     args = parse()
 
-    current_working_directory = pathlib.Path().resolve()
-
     conanfile_directories = []
     if not args.directories:
+        current_working_directory = pathlib.Path().resolve()
         conanfile_directories_include = set(current_working_directory.glob('**/conanfile.txt'))
         conanfile_directories_exclude = set(current_working_directory.glob('**/.conan/**/conanfile.*'))
         conanfile_directories = conanfile_directories_include - conanfile_directories_exclude

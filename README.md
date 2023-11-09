@@ -44,8 +44,8 @@ source .venv/bin/activate
 
 pip3 install -r scripts/requirements.txt --no-cache-dir --disable-pip-version-check
 
-python3 scripts/conan/profile.py <COMPILER_NAME> <COMPILER_VERSION>
-python3 scripts/conan/install.py <Debug|Release> <PROFILE>
+python3 scripts/conan/profile.py -c <COMPILER_NAME> -v <COMPILER_VERSION>
+python3 scripts/conan/install.py -b <Debug|Release> -p <PROFILE>
 ```
 
 ## Build
@@ -53,4 +53,9 @@ python3 scripts/conan/install.py <Debug|Release> <PROFILE>
 python ./scripts/cmake/configure.py Release <PROFILE>
 python ./scripts/cmake/build.py Release
 python ./scripts/cmake/install.py Release
+```
+
+## CI
+```bash
+cibuildwheel --output-dir wheelhouse . --platform linux
 ```

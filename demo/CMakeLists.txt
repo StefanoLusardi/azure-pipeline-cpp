@@ -1,4 +1,5 @@
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/build/modules)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # library
 add_library(demo)

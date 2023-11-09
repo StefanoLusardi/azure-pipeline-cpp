@@ -12,8 +12,10 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
-        subprocess.check_call(["cmake", "--version"])
-        subprocess.check_call(["ninja", "--version"])
+        if os.environ.get("CI_BUILD", False):
+            subprocess.check_call(["python -m pip install -r scripts/requirements.txt"], shell=True)
+            subprocess.check_call(["python scripts/conan/profile.py"], shell=True)
+            subprocess.check_call(["python scripts/conan/install.py -d demo demo/bindings"], shell=True)
 
         self.build_type = os.environ.get("DEMO_PYBIND_BUILD_TYPE", "Release")
         self.cmake_configure(ext)
